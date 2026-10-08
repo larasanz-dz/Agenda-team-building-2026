@@ -1,0 +1,584 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Agenda Offsite DZ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@500&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap">
+<style>
+/* Layout: cuaderno de ruta. Agenda por días arriba (filas desplegables con la ficha del facilitador), anexos debajo, índice flotante. */
+:root{
+  --bg:#EEF1EC; --surface:#FBFCFA; --ink:#18221C; --muted:#56655C; --line:#D3DACF; --soft:#E3E8E0;
+  --accent:#C2362B; --accent-ink:#FFFFFF;
+  --c-con:#24745F; --c-exp:#A86A0E; --c-emp:#33568C; --c-esc:#7D4472; --c-log:#6E7A72;
+  --warn-bg:#FBEDEA; --warn-ink:#8A2A21;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Sans 3","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111713; --surface:#18201B; --ink:#E4EBE6; --muted:#9BABA1; --line:#2B3630; --soft:#202A24;
+  --accent:#EE6352; --accent-ink:#1A0F0D;
+  --c-con:#5CC0A5; --c-exp:#E2A84A; --c-emp:#87A8E0; --c-esc:#D493C6; --c-log:#9AA79F;
+  --warn-bg:#2E1B18; --warn-ink:#F2A79C; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111713; --surface:#18201B; --ink:#E4EBE6; --muted:#9BABA1; --line:#2B3630; --soft:#202A24;
+  --accent:#EE6352; --accent-ink:#1A0F0D;
+  --c-con:#5CC0A5; --c-exp:#E2A84A; --c-emp:#87A8E0; --c-esc:#D493C6; --c-log:#9AA79F;
+  --warn-bg:#2E1B18; --warn-ink:#F2A79C; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding-inline:16px;padding-block:28px 120px}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;line-height:1.1;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.4rem);text-transform:uppercase}
+h2{font-size:clamp(1.6rem,4vw,2.1rem);text-transform:uppercase}
+h3{font-size:1.25rem}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+
+/* Cabecera */
+.head{display:grid;gap:14px;padding-bottom:22px;border-bottom:2px solid var(--ink)}
+.eyebrow{font-family:var(--f-mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lead{max-width:65ch;font-size:1.08rem}
+.facts{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.92rem;color:var(--muted)}
+.facts b{color:var(--ink);font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:8px}
+
+/* Marca de sendero (franja blanca y roja) */
+.blaze{display:inline-grid;grid-template-rows:1fr 1fr;width:22px;height:14px;border:1px solid var(--line);flex:none}
+.blaze::before{content:"";background:#FFFFFF}
+.blaze::after{content:"";background:var(--accent)}
+
+/* Barra de días */
+.daybar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-block:12px;border-bottom:1px solid var(--line)}
+.daybar a{font-family:var(--f-display);font-weight:600;font-size:1.05rem;text-transform:uppercase;letter-spacing:.03em;text-decoration:none;padding:4px 12px;border:1px solid var(--line);border-radius:999px;background:var(--surface)}
+.daybar a:hover{border-color:var(--ink)}
+.daybar .spacer{flex:1}
+.btn{font:600 .9rem var(--f-body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:6px 12px;cursor:pointer}
+.btn:hover{border-color:var(--ink)}
+
+/* Chips de categoría */
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:.78rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--k)}
+.chip::before{content:"";width:9px;height:9px;border-radius:2px;background:var(--k)}
+.k-con{--k:var(--c-con)}.k-exp{--k:var(--c-exp)}.k-emp{--k:var(--c-emp)}.k-esc{--k:var(--c-esc)}.k-log{--k:var(--c-log)}
+
+/* Días */
+.day{padding-top:34px;scroll-margin-top:70px}
+.dayhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.dayhead .blaze{align-self:center}
+.daysub{color:var(--muted);max-width:65ch;margin-bottom:14px}
+.list{display:grid;gap:6px}
+
+/* Filas de agenda */
+.row{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--k);border-radius:6px}
+.row>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:4.2rem 1fr auto;gap:4px 14px;align-items:baseline;padding:12px 14px}
+.row>summary::-webkit-details-marker{display:none}
+.time{font-family:var(--f-mono);font-size:.95rem;font-variant-numeric:tabular-nums}
+.ttl{min-width:0}
+.ttl strong{display:block;font-size:1.05rem;font-weight:700;line-height:1.3}
+.ttl .chip{margin-top:3px}
+.dur{font-family:var(--f-mono);font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:8px;white-space:nowrap}
+.dur .caret{display:inline-block;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg) translateY(-2px);transition:transform .15s}
+.row[open] .caret{transform:rotate(225deg) translateY(-1px)}
+.row.quiet{border-left-color:var(--line);background:transparent;border-style:dashed}
+.row.quiet>div{display:grid;grid-template-columns:4.2rem 1fr auto;gap:14px;padding:8px 14px;align-items:baseline;color:var(--muted)}
+.row.quiet .ttl{font-size:.95rem}
+
+/* Ficha del facilitador */
+.card{border-top:1px solid var(--line);padding:16px 14px 18px;display:grid;gap:16px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px 18px;margin:0}
+.meta div{min-width:0}
+.meta dt,.lbl{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.meta dd{margin:0;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.two>div{min-width:0}
+.why{background:var(--soft);border-radius:6px;padding:10px 12px}
+.steps{margin:0;padding-left:1.3rem;display:grid;gap:6px}
+.steps.timed{list-style:none;padding:0}
+.steps.timed li{display:grid;grid-template-columns:4.6rem 1fr;gap:10px}
+.steps.timed .m{font-family:var(--f-mono);font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums;padding-top:2px}
+.sub{margin:6px 0 0;padding-left:1.1rem}
+.mat{margin:0;padding-left:1.1rem;display:grid;gap:2px}
+.dont{background:var(--warn-bg);color:var(--warn-ink);border-radius:6px;padding:10px 12px}
+.dont .lbl{color:var(--warn-ink)}
+.note{font-size:.92rem;color:var(--muted)}
+
+/* Anexos */
+.annex{padding-top:56px;scroll-margin-top:70px}
+.annex>h2{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.annex>.intro{max-width:65ch;color:var(--muted);margin-bottom:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font-family:var(--f-mono);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td:first-child{font-weight:600}
+.ladder{counter-reset:s;list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.ladder li{counter-increment:s;display:grid;grid-template-columns:2.2rem 1fr;gap:10px;align-items:baseline}
+.ladder li::before{content:counter(s);font-family:var(--f-display);font-weight:700;font-size:1.4rem;color:var(--accent);text-align:right}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.checks label{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:8px 6px;border-radius:6px;cursor:pointer}
+.checks label:hover{background:var(--soft)}
+.checks input{width:18px;height:18px;margin-top:3px;accent-color:var(--accent)}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.cols>div{min-width:0}
+
+/* Índice flotante */
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:20;display:flex;align-items:center;gap:8px;font:700 1rem var(--f-display);letter-spacing:.05em;text-transform:uppercase;color:var(--accent-ink);background:var(--accent);border:0;border-radius:999px;padding:12px 18px;cursor:pointer;box-shadow:0 6px 18px rgba(0,0,0,.18)}
+.fab .bars{display:grid;gap:3px}.fab .bars i{display:block;width:14px;height:2px;background:currentColor}
+.menu{position:fixed;right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:20;width:min(320px,calc(100vw - 32px));max-height:min(70vh,560px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;box-shadow:0 12px 32px rgba(0,0,0,.22)}
+.menu .grp{display:grid;gap:2px;margin-bottom:12px}
+.menu .grp:last-child{margin-bottom:0}
+.menu a{text-decoration:none;padding:6px 8px;border-radius:6px;display:block}
+.menu a:hover{background:var(--soft)}
+.menu .lbl{padding:0 8px}
+
+@media (max-width:640px){
+  .two{grid-template-columns:1fr}
+  .row>summary,.row.quiet>div{grid-template-columns:3.4rem 1fr auto;gap:4px 10px}
+  .steps.timed li{grid-template-columns:3.8rem 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <span class="eyebrow">Desafío Zero · Encuentro de equipo · Guía del facilitador</span>
+    <h1>Agenda Offsite DZ</h1>
+    <p class="lead">Primero confianza, después experiencia, después información y al final opinión. Todo con el grupo entero, sin trabajo separado por equipos. Pulsa cualquier bloque para ver su ficha: objetivo, por qué va en ese momento, guion, material y qué evitar.</p>
+    <div class="facts">
+      <span><b>Sábado 10 oct</b> llegada 13:00</span>
+      <span><b>Lunes 12 oct</b> fin 12:00</span>
+      <span><b>Comidas</b> desayuno 9:00–10:00 · comida 14:00–15:30 · cena 21:00</span>
+      <span><b>Programa</b> 14 h 15'</span>
+    </div>
+    <div class="legend">
+      <span class="chip k-con">Conexión</span>
+      <span class="chip k-exp">Experiencia</span>
+      <span class="chip k-emp">Empresa</span>
+      <span class="chip k-esc">Escucha y cierre</span>
+      <span class="chip k-log">Logística</span>
+    </div>
+  </header>
+
+  <nav class="daybar" aria-label="Días">
+    <a href="#sabado">Sábado</a>
+    <a href="#domingo">Domingo</a>
+    <a href="#lunes">Lunes</a>
+    <span class="spacer"></span>
+    <button class="btn" id="toggleAll" type="button">Abrir todas las fichas</button>
+  </nav>
+
+  <main id="agenda"></main>
+
+  <section class="annex" id="logica">
+    <h2><span class="blaze" aria-hidden="true"></span>Cómo está pensado</h2>
+    <p class="intro">Cada bloque pide algo más de exposición que el anterior. El sábado no hay presentaciones, cifras ni cambios organizativos.</p>
+    <div class="panel">
+      <ol class="ladder">
+        <li><span><b>Sábado tarde.</b> Conversaciones en parejas mientras se camina y una línea en la que todos tienen sitio. Riesgo bajo.</span></li>
+        <li><span><b>Sábado tarde.</b> Primeros auxilios: cooperar con las manos y cuidarse unos a otros.</span></li>
+        <li><span><b>Sábado noche.</b> Fuego libre, con canciones o historias si surgen. No se trabaja.</span></li>
+        <li><span><b>Domingo mañana.</b> La dinámica de orientación, una experiencia compartida.</span></li>
+        <li><span><b>Domingo tarde.</b> Taller de valores y, después, la parte organizativa: situación de la empresa, cambios internos, qué hace cada equipo y contrato de viaje.</span></li>
+        <li><span><b>Lunes.</b> Urna anónima y acuerdos de equipo, cuando ya hay confianza y contexto.</span></li>
+      </ol>
+    </div>
+    <div class="cols" style="margin-top:12px">
+      <div class="panel">
+        <div class="lbl">Lo que no se mueve</div>
+        <ul class="mat">
+          <li>Sábado sin nada de trabajo.</li>
+          <li>Parejas antes que grupo.</li>
+          <li>Valores justo después de la orientación y antes de que dirección presente nada.</li>
+          <li>Escucha el lunes, después de conocer los cambios.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="lbl">Lo que se puede mover</div>
+        <ul class="mat">
+          <li>Situación de la empresa y equipos internos pueden ir en orden inverso.</li>
+          <li>El abogado puede ir antes de los equipos internos.</li>
+          <li>Si la orientación se alarga, el taller de valores baja a 60'. Abogado y primeros auxilios tienen hora cerrada.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="annex" id="roles">
+    <h2><span class="blaze" aria-hidden="true"></span>Roles</h2>
+    <p class="intro">Oliver lleva la logística y los tiempos. Cada dinámica la lidera una persona del equipo; el reparto se cierra el jueves.</p>
+    <div class="tbl panel"><table>
+      <thead><tr><th>Rol</th><th>Quién</th><th>Cuándo</th><th>Nota</th></tr></thead>
+      <tbody>
+        <tr><td>Logística y tiempos</td><td>Oliver</td><td>Todo el fin de semana</td><td>Material, comidas, espacios y que se cumplan los horarios. Campanilla 5' antes del final de cada bloque</td></tr>
+        <tr><td>Taller de valores</td><td>Ya asignado</td><td>Domingo 15:30</td><td>Escuchar al equipo; dirección no pone las palabras</td></tr>
+        <tr><td>Resto de dinámicas</td><td>Se reparte el jueves</td><td>Bienvenida, conexión, puesta en común, escucha, cierre</td><td>Una persona lidera cada una</td></tr>
+        <tr><td>Documentación</td><td>Quien dibuje o escriba bien</td><td>Valores, empresa, escucha</td><td>Fotos y notas al Drive esa misma noche</td></tr>
+        <tr><td>Observadores de la orientación</td><td>Dos personas; mejor quien no pueda hacer esfuerzo</td><td>Domingo mañana</td><td>Apuntan hechos, no opiniones</td></tr>
+        <tr><td>Presentadores</td><td>Rubén, Oliver, Lara, Antonio</td><td>Domingo 17:00</td><td>10' cada uno, ensayado</td></tr>
+        <tr><td>Equipos internos</td><td>Dos personas por equipo</td><td>Domingo 18:00</td><td>No siempre el responsable</td></tr>
+        <tr><td>Instructor de primeros auxilios</td><td>Externo</td><td>Sábado 16:45</td><td>Caso adaptado a las rutas</td></tr>
+        <tr><td>Redes</td><td>Persona de redes</td><td>Sábado 16:10 (ola), sábado 19:45, domingo 13:20</td><td>Entrevistas a líderes y vídeos cortos</td></tr>
+        <tr><td>Abogado</td><td>Externo</td><td>Domingo 19:00</td><td>Recibe las preguntas el jueves</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="annex" id="valores">
+    <h2><span class="blaze" aria-hidden="true"></span>Valores: el proceso completo</h2>
+    <p class="intro">Los valores no salen de un solo bloque, sino de cinco momentos que van de la historia personal a lo que el equipo dice de forma anónima. El equipo los ve publicados unas seis semanas después.</p>
+    <div class="cols">
+      <div class="panel">
+        <div class="lbl">Durante el encuentro</div>
+        <ol class="steps">
+          <li>Convocatoria: pensar en un momento en que sentiste “esto es exactamente DZ”.</li>
+          <li>Sábado, primeros auxilios: quién tomó la iniciativa sin que se lo pidieran. La noche del fuego queda libre.</li>
+          <li>Domingo mañana: orientación y puesta en común; los observadores aportan hechos.</li>
+          <li>Domingo tarde: taller de valores; entrevistas en parejas, agrupación y subasta.</li>
+          <li>Lunes: las respuestas a “¿qué hace que sigas en DZ?” confirman o matizan los valores del domingo.</li>
+        </ol>
+      </div>
+      <div class="panel">
+        <div class="lbl">La voz de quien no habla en público</div>
+        <ul class="mat">
+          <li>Formulario anónimo previo: “¿Qué no debería cambiar nunca en DZ?”</li>
+          <li>Cada persona escribe sola antes de hablar en pareja.</li>
+          <li>Las historias se cuentan en parejas y la agrupación se hace en silencio.</li>
+          <li>La urna anónima está abierta desde el sábado.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="annex" id="situaciones">
+    <h2><span class="blaze" aria-hidden="true"></span>Situaciones difíciles</h2>
+    <p class="intro">Chuleta de bolsillo. Lo más probable no es el conflicto, sino que dirección se defienda durante la escucha y el cansancio del domingo por la tarde.</p>
+    <div class="tbl panel"><table>
+      <thead><tr><th>Situación</th><th>Señal</th><th>Respuesta</th></tr></thead>
+      <tbody>
+        <tr><td>Alguien acapara</td><td>Tercera intervención seguida</td><td>“Gracias. Quiero oír a quien aún no ha hablado.” Pasar a parejas.</td></tr>
+        <tr><td>Alguien no participa</td><td>Respuestas de una palabra</td><td>Nunca señalarle. Más trabajo en parejas; escuchar también es participar.</td></tr>
+        <tr><td>Silencio general</td><td>20'' sin respuesta</td><td>Aguantar 10'' más. Luego: “Hablad 2' con quien tengáis al lado.”</td></tr>
+        <tr><td>Conflicto abierto</td><td>Tono subido, ataque a la persona</td><td>“Aquí hay algo importante.” Separar hecho, efecto y petición. Si no cabe, se agenda con fecha.</td></tr>
+        <tr><td>Crítica fuerte a dirección</td><td>Miradas a los fundadores</td><td>Reformularla como patrón, no como persona, y anotarla. Dirección responde por escrito.</td></tr>
+        <tr><td>Dirección se defiende</td><td>“Eso no es así”</td><td>“Eso, en la respuesta por escrito.” Después, 2' en privado.</td></tr>
+        <tr><td>Energía baja</td><td>Móviles, sillas hacia atrás</td><td>Levantarse, cambiar de sitio, acortar. Nunca “venga, un poco más”.</td></tr>
+        <tr><td>Se alarga</td><td>Nadie ve la campanilla</td><td>“Quedan 3'. ¿Qué necesitamos decidir antes de parar?” Lo demás, a un cartel de pendientes.</td></tr>
+        <tr><td>Alguien no quiere participar</td><td>Se aparta o lo dice</td><td>Se respeta sin preguntar. Se le ofrece observar, tomar tiempos o documentar.</td></tr>
+        <tr><td>Alcohol</td><td>Domingo o lunes apagados</td><td>Moderación las dos noches; café listo desde las 9:00 el lunes.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section class="annex" id="material">
+    <h2><span class="blaze" aria-hidden="true"></span>Material y compras</h2>
+    <p class="intro">Lista de compra para 15 personas. Oliver la revisa la víspera. El material específico de cada bloque está en su ficha. Las marcas se guardan solo en este navegador.</p>
+    <div class="panel"><ul class="checks" id="matList"></ul></div>
+  </section>
+
+  <section class="annex" id="decisiones">
+    <h2><span class="blaze" aria-hidden="true"></span>Decisiones pendientes</h2>
+    <p class="intro">El encuentro es en cinco días. Las tres primeras bloquean la preparación. Las marcas se guardan solo en este navegador.</p>
+    <div class="panel"><ul class="checks" id="decList"></ul></div>
+  </section>
+
+  <section class="annex" id="despues">
+    <h2><span class="blaze" aria-hidden="true"></span>Después del encuentro</h2>
+    <p class="intro">La credibilidad se decide en las semanas siguientes. En el cierre del lunes se anuncian estas fechas en voz alta.</p>
+    <div class="tbl panel"><table>
+      <thead><tr><th>Cuándo</th><th>Qué</th><th>Quién</th></tr></thead>
+      <tbody>
+        <tr><td>Lunes 12, antes de las 20:00</td><td>Fotos y notas de valores, preguntas del muro y lo que salió de la urna y de la pared, en el Drive</td><td>Documentación</td></tr>
+        <tr><td>Lunes 19</td><td>Respuesta por escrito a las propuestas: lo cambiamos, lo estudiamos (con fecha) o no lo cambiamos (con el porqué). Respuesta a las preguntas del muro. Preguntas frecuentes del abogado</td><td>Dirección</td></tr>
+        <tr><td>+2 semanas</td><td>Dirección elige los 5 valores de DZ a partir del listado del equipo</td><td>Antonio y dirección</td></tr>
+        <tr><td>+4 semanas</td><td>Borrador de 3–5 valores a 4–5 personas de distintos perfiles y una semana de comentarios</td><td>Dirección y quien lideró el taller de valores</td></tr>
+        <tr><td>+6 semanas</td><td>Valores publicados con su origen: “salen de lo que dijisteis en el encuentro”</td><td>Dirección</td></tr>
+        <tr><td>+3–4 semanas</td><td>Acuerdo de equipo completo, con todo lo que salió en la pared, enviado por escrito</td><td>Dirección</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+</div>
+
+<button class="fab" id="fab" type="button" aria-expanded="false" aria-controls="menu"><span class="bars" aria-hidden="true"><i></i><i></i><i></i></span>Índice</button>
+<nav class="menu" id="menu" hidden aria-label="Índice">
+  <div class="grp">
+    <div class="lbl">Agenda</div>
+    <a href="#sabado">Sábado · Conexión</a>
+    <a href="#domingo">Domingo · Experiencia, valores y empresa</a>
+    <a href="#lunes">Lunes · Escucha y cierre</a>
+  </div>
+  <div class="grp">
+    <div class="lbl">Para el facilitador</div>
+    <a href="#logica">Cómo está pensado</a>
+    <a href="#roles">Roles</a>
+    <a href="#valores">Valores: el proceso completo</a>
+    <a href="#situaciones">Situaciones difíciles</a>
+    <a href="#material">Material y compras</a>
+    <a href="#decisiones">Decisiones pendientes</a>
+    <a href="#despues">Después del encuentro</a>
+  </div>
+</nav>
+
+<script>
+const DAYS = [
+ {id:"sabado", name:"Sábado 10", theme:"Conexión",
+  sub:"Solo sirve para conocerse y empezar a confiar: de la pareja al grupo de tres, y del grupo de tres al grupo entero. No se habla de trabajo hasta el domingo por la tarde.",
+  blocks:[
+  {t:"13:00", d:"60'", k:"con", title:"Bienvenida y entrega de camisetas",
+   obj:"Recibir al equipo y contar para qué estamos aquí.",
+   why:"Es lo primero que vive el equipo al llegar. La bolsa con la camiseta y el mensaje hace que cada persona se sienta esperada. La apertura deja claro que la base del fin de semana es pasarlo bien juntos.",
+   fac:"Por asignar (jueves)", res:"Bolsas de bienvenida entregadas", en:"Social",
+   steps:[
+     ["13:00–13:40","<b>Llegada.</b> Cada persona recoge su bolsa de bienvenida al llegar y deja sus cosas en la habitación. En la bolsa van la camiseta, un mensaje corto y algo dulce (chuches u otro detalle)."],
+     ["13:45","<b>Apertura (unos 10').</b> Para qué estamos aquí: disfrutar, compartir y conocernos mejor, y también contar cómo está la empresa en este momento. Pero la base es que lo pasemos bien juntos. Al terminar, se presenta la urna anónima, abierta todo el fin de semana."],
+     ["13:55","A comer. Las mesas están asignadas y mezcladas."]],
+   mat:["Bolsas de bienvenida con nombre: camiseta de la talla de cada uno, mensaje y detalle","Lista de habitaciones","Plano de mesas","La urna anónima con su cartel, ya colocada"],
+   dont:"Alargar la apertura o meter ya contenido de empresa; eso llega el domingo."},
+  {t:"14:00", d:"90'", k:"log", quiet:true, title:"Comida con mesas mezcladas"},
+  {t:"15:30", d:"60'", k:"con", title:"Dinámica de conexión: nombres, tarjetas con preguntas y fila por antigüedad",
+   obj:"Que todo el mundo hable con mucha gente distinta, de uno en uno, antes de hacer nada en grupo.",
+   why:"Hablar con una sola persona es el formato que menos expone, y cambiar de pareja muchas veces rompe los grupitos de siempre. La fila muestra que todos forman parte de la historia de DZ, también quien colabora una vez al año, y la ola deja un vídeo para redes.",
+   fac:"Por asignar (jueves); la persona de redes dirige la grabación", res:"Línea del tiempo del equipo y vídeo de la ola para redes", en:"Alta, en movimiento",
+   steps:[
+     ["0–10","<b>Nombres.</b> En círculo, dos rondas. Primera: cada persona dice su nombre y un animal, un color o una palabra que la represente, y por qué en una frase (unos 20'' por persona). Segunda, más rápida: cada uno dice el nombre y el animal, color o palabra de la persona de su derecha. Quien lidere la dinámica empieza para marcar el tono."],
+     ["10–40","<b>Tarjetas con preguntas, al estilo del juego de la silla.</b> Cada persona recibe una tarjeta del juego Bertelis. Suena la música: todos bailan y se mueven por el espacio. Cuando para, cada uno coge a la persona que tenga más cerca; se presentan y se responden la tarjeta que tiene cada uno en ese momento (1' por persona). Intercambian las tarjetas y, al volver la música, a moverse otra vez. Hacia la mitad, una parada es de tres en tres. Unas 7 paradas de 4'; si alguien se queda solo, se une a la pareja más cercana."],
+     ["40–60","<b>Reto: la línea del tiempo en silencio.</b> Se lanza como un desafío: “Tenéis 5' para ordenaros por antigüedad en Desafío Zero y formar una línea del tiempo, sin hablar.” Solo gestos, dedos o lo que se les ocurra. Si a los 5' no lo han conseguido, 5' más, como máximo 10'. Al acabar, cada persona dice su nombre y el año en que empezó para comprobarlo. Después, una ola del más veterano al más nuevo, grabada en vídeo vertical desde delante, con las camisetas. Se ensaya una vez y se graba la segunda."]],
+   mat:["Tarjetas del juego Bertelis, una por persona","Altavoz y lista de música","Móvil para grabar, mejor con estabilizador"],
+   dont:"Rondas de presentación sentados o preguntas que obliguen a exponerse delante de todos.",
+   note:"Con lluvia, todo funciona igual en una sala amplia."},
+  {t:"16:30", d:"15'", k:"log", quiet:true, title:"Pausa"},
+  {t:"16:45", d:"180'", k:"exp", title:"Taller de primeros auxilios",
+   obj:"Aprender algo útil y vivir la seguridad del grupo como algo de todos.",
+   why:"Es el único bloque fijo que no es organizativo, y cooperar con las manos une. Dejarlo el domingo juntaría 6 h de actividad física y no cabrían ni los valores ni las presentaciones.",
+   fac:"Instructor externo. Un líder (no dirección) lo abre.", res:"Caso final resuelto en grupo", en:"Alta, práctica",
+   steps:[
+     ["Apertura","Un líder: “En ruta, la seguridad del grupo no es del líder, es de todos.”"],
+     ["0–100","Prácticas rotativas en grupos mezclados: RCP y desfibrilador, hemorragias y vendajes, inmovilización y traslado."],
+     ["100–115","Pausa."],
+     ["115–165","Caso práctico con todo el grupo: un herido a 20' de la pista y sin cobertura. El grupo se organiza solo: quién atiende, quién sale a pedir ayuda y quién cuida del resto."],
+     ["165–180","Puesta en común: ¿qué ha funcionado?, ¿quién ha tomado la iniciativa sin que se lo pidieran? Las respuestas se guardan para el taller de valores."]],
+   mat:["Lo aporta el instructor; confirmar maniquí de RCP y desfibrilador de prácticas","Botiquín y material para el caso","Espacio exterior para el caso final","Tarjetas para apuntar la puesta en común"],
+   dont:"Que dirección haga la apertura o convierta el taller en una charla.",
+   note:"Con 3 h puede acercarse a una formación básica: confirmar si el instructor da certificado de asistencia."},
+  {t:"19:45", d:"75'", k:"log", title:"Tiempo libre y entrevistas a líderes para redes",
+   obj:"Grabar entrevistas cortas a líderes sin quitar tiempo libre al resto.",
+   why:"La persona de redes necesita un hueco con buena luz y sin interrumpir bloques. Al atardecer y por turnos, solo los entrevistados pierden parte de su tiempo libre.",
+   fac:"Persona de redes", res:"Entrevistas grabadas", en:"Social",
+   steps:["Entrevistas de 5–8' por persona, por turnos y voluntarias.","Lista de líderes, turnos y 3–4 preguntas enviadas antes del evento.","El domingo de 13:20 a 14:00, al acabar la orientación, vídeos cortos con la energía del momento. Durante la orientación puede grabar recursos si el organizador lo permite."],
+   mat:["Móvil o cámara, micrófono de solapa y estabilizador","Lista de turnos"],
+   dont:"Convertir el tiempo libre de todos en sesión de grabación."},
+  {t:"21:00", d:"75'", k:"log", quiet:true, title:"Cena"},
+  {t:"22:15", d:"", k:"con", title:"Noche libre junto al fuego",
+   obj:"Descansar y estar juntos sin trabajar.",
+   why:"Después de un día intenso hace falta espacio sin agenda. Aquí no se trabaja nada de valores; eso es el domingo.",
+   fac:"Nadie", res:"—", en:"Baja",
+   steps:["Si surge, alguien lanza una invitación abierta, sin turnos ni obligación: “¿Cuál es la mejor historia que has vivido con Desafío Zero, como viajero o como líder?” o “¿Cómo empezó tu historia con DZ?”","Si no surge, guitarra y canciones.","Si apetece, una ronda corta de “me he dado cuenta y agradezco” también encaja aquí."],
+   mat:["Mantas y leña","Permiso de fuego o farolillos","Guitarra","Altavoz pequeño"],
+   dont:"Tarjetas, grupos organizados, conclusiones o cualquier cosa que suene a dinámica."}
+ ]},
+ {id:"domingo", name:"Domingo 11", theme:"Experiencia, valores y empresa",
+  sub:"Empieza con una experiencia compartida, la convierte en valores y, con el grupo ya unido, entra en la parte organizativa.",
+  blocks:[
+  {t:"9:00", d:"60'", k:"log", quiet:true, title:"Desayuno"},
+  {t:"10:00", d:"180'", k:"exp", title:"Dinámica de orientación",
+   obj:"Vivir una experiencia compartida.",
+   why:"Da a los valores una base real: lo que el equipo hace cuando camina junto, no lo que dice que hace.",
+   fac:"Organizador externo y dos observadores", res:"Notas de los dos observadores", en:"Alta",
+   steps:["No se toca el diseño del organizador. Solo se piden grupos mezclados (nunca por área).","Los observadores apuntan hechos, no opiniones:",
+     ["Plantilla","",["Un momento de decisión: ¿quién decidió y cómo?","Alguien que se quedó atrás: ¿qué hizo el grupo?","Una vez que un grupo ayudó a otro, o eligió no hacerlo.","Una frase que se repitió.","Un momento de tensión y cómo se resolvió.","Un momento de risa."]]],
+   mat:["Dos plantillas de observación","Tablillas con pinza y bolígrafos"],
+   dont:"Hacer grupos por área o por equipo.",
+   note:"El papel de observador se ofrece a quien no pueda hacer esfuerzo físico, sin preguntar por qué."},
+  {t:"13:00", d:"20'", k:"exp", title:"Puesta en común de la orientación",
+   obj:"Recoger lo vivido en hechos.",
+   why:"En caliente se recuerda lo que pasó; por la tarde ya solo se recuerda la interpretación.",
+   fac:"Por asignar (jueves)", res:"Una tarjeta por grupo", en:"Alta",
+   steps:["En la meta, cada grupo en círculo y tres preguntas: ¿qué ha pasado?, ¿cómo habéis decidido?, ¿qué os ha ayudado y qué os ha complicado?","Una tarjeta por grupo.","Los observadores comparten dos hechos cada uno.","“¿Qué nos dice esto de nosotros?” se guarda para la tarde."],
+   mat:["Tarjetas y rotuladores"],
+   dont:"Sacar conclusiones sobre valores ahora.",
+   note:"Si el organizador no deja hueco, se hace en los primeros 10' del taller de valores."},
+  {t:"13:20", d:"40'", k:"log", quiet:true, title:"Tiempo libre: ducha y descanso · vídeos cortos para redes"},
+  {t:"14:00", d:"90'", k:"log", quiet:true, title:"Comida"},
+  {t:"15:30", d:"75'", k:"esc", title:"Taller de valores: momentos cumbre y subasta",
+   obj:"Sacar un listado amplio de los valores que el equipo percibe y quiere para DZ, ordenado por la importancia que le da en la subasta. No se decide nada aquí: después, dirección elige los 5 a partir de este listado.",
+   why:"Va justo después de la orientación, con lo vivido fresco, y antes de que dirección presente nada. Las entrevistas sacan historias reales, no palabras bonitas; la subasta obliga a elegir, porque no todo puede ser importante a la vez. Preparación mínima: los valores los escribe la gente en la sala.",
+   fac:"Ya asignado (no dirección)", res:"Listado de valores ordenado por la subasta", en:"Media-alta",
+   steps:[
+     ["Cartel","Cuatro preguntas para las entrevistas:",["¿Cuándo has sentido más orgullo de estar en Desafío Zero?","¿Qué hacías tú y qué hacían los demás en ese momento?","¿Qué hizo posible que saliera así?","Y mirando adelante: ¿qué tendríamos que ser o hacer mejor para llegar a donde queremos ir?"]],
+     ["0–7","<b>Calentamiento “Si DZ fuera…”.</b> En círculo, cada persona dice qué animal, canción o persona sería DZ y por qué, en una frase. Quien lidera apunta en post-its las palabras que salen en los porqués; se suman a los de las entrevistas."],
+     ["7–28","<b>Entrevistas en parejas.</b> Cada uno entrevista al otro 9' con las preguntas del cartel y después se cambian. Quien escucha solo pregunta, no opina. Al terminar, cada persona escribe 3 post-its sobre la historia que ha oído, una idea en cada uno y mejor con verbo (“esperó al último”, “dijo la verdad al cliente”). Salen unos 45 post-its."],
+     ["28–40","<b>Agrupar en silencio.</b> Todos los post-its al suelo; 8' moviéndolos sin hablar hasta formar grupos. Se pone nombre a cada grupo y cada valor se escribe en grande en un folio. Salen unos 10–12."],
+     ["40–45","<b>Estrategia.</b> 3 grupos mezclados de 5 personas, con 100 puntos cada uno. Cada grupo mira los folios y decide qué 3 o 4 valores quiere de verdad y cuánto pagaría. Hay 300 puntos para unos 12 valores: no da para todo."],
+     ["45–60","<b>Subasta.</b>",["Quien lidera coge un folio y lo lee: “Honestidad. ¿Quién da 10?”","Los grupos pujan levantando la mano y diciendo la cifra, de 10 en 10 y siempre por encima de la anterior.","Cuando nadie sube: “A la una, a las dos, a las tres… ¡vendido!”. El grupo ganador apunta valor y precio en su hoja, resta los puntos y se lleva el folio.","Nadie puja más de lo que le queda; un grupo a 0 ya no puja.","Si nadie puja, el valor queda “desierto” y se aparta: también es información.","Ejemplo: “Cuidado del grupo, ¿quién da 10?” A: 10. B: 20. A: 40. Nadie sube: vendido a A por 40, que se queda con 60 puntos."]],
+     ["60–65","<b>Por qué lo comprasteis.</b> Los folios se ordenan en el suelo de más caro a más barato. ¿Por qué pagasteis tanto por este? ¿Cuál no quiso nadie y por qué? ¿Qué os ha sorprendido?"],
+     ["65–75","<b>Listado final.</b> Se fotografía la fila de folios ordenada por precio, incluidos los desiertos: ese es el resultado del taller. Si da tiempo, para los más caros: “se nota cuando…”. Cierre: “Con este listado, dirección elegirá los 5 valores de DZ y os lo contará.”"]],
+   mat:["Cartel con las tres preguntas","Post-its y rotuladores","Folios","Una hoja por grupo para apuntar los puntos","Algo que haga de mazo (opcional)"],
+   dont:"Que quien lidera sugiera palabras al agrupar, que dirección ponga los nombres o empezar la subasta sin el tiempo de estrategia.",
+   note:"Si la orientación se alarga y hay que recortar a 60', se acortan las entrevistas a 2 × 7'."},
+  {t:"16:45", d:"15'", k:"log", quiet:true, title:"Pausa"},
+  {t:"17:00", d:"60'", k:"emp", title:"Situación de la empresa y cambios internos",
+   obj:"Que todos entiendan cómo funciona DZ por dentro, por qué se toman ciertas decisiones y qué cambia.",
+   why:"Con el grupo ya unido, la información se recibe con más confianza. Va antes de los equipos internos para dar primero el marco general.",
+   fac:"Dirección, con una presentación en PowerPoint", res:"Muro de preguntas", en:"Media",
+   steps:[
+     ["0–10","<b>De dónde venimos · Rubén.</b> Tres números: actividad del año, ingresos frente a objetivo y lo que queda por expedición. Cada uno con qué significa y qué estamos haciendo."],
+     ["10–20","<b>Qué aprendimos en 2026 · Oliver.</b> Tres aprendizajes, contados desde lo que vivieron los líderes en ruta."],
+     ["20–32","<b>Qué cambia por dentro · Lara.</b> Nueva estructura y roles, quién decide qué, qué cambia respecto a 2026 y qué no cambia."],
+     ["32–42","<b>A dónde vamos en 2027 · Antonio.</b> La visión en una frase, los objetivos del año y lo que no vamos a hacer."],
+     ["42–47","<b>Reflexión en parejas.</b> ¿Qué te ilusiona?, ¿qué te preocupa?, ¿qué pregunta te llevas?"],
+     ["47–60","<b>Preguntas abiertas.</b> Las que no se respondan van a un muro y se contestan por escrito en 7 días."]],
+   mat:["Presentación en PowerPoint","Proyector o pantalla, portátil y cable (probado el sábado)","Papel kraft para el muro de preguntas","Post-its"],
+   dont:"Diapositivas llenas de texto, siglas internas, cifras que no se haya decidido compartir o pasarse de 10' por tema."},
+  {t:"18:00", d:"45'", k:"emp", title:"Presentación de los equipos internos: qué hace cada uno",
+   obj:"Conocer el trabajo de los demás y cómo ayudarnos.",
+   why:"Después de ver la estructura, cada equipo se entiende dentro del conjunto. Las peticiones “te necesito para…” alimentan la escucha del lunes.",
+   fac:"Dos personas de cada equipo", res:"Un cartel por equipo con lo que los demás le piden", en:"Media-alta",
+   steps:[
+     ["0–30","Cada equipo tiene 5' y el mismo guion (campanilla al minuto 4):",["Qué hacemos y para quién, en una frase.","Un día normal, con un ejemplo real: un correo de cliente sin nombres, una publicación que funcionó, cómo es una llamada de venta.","Lo que no se ve de nuestro trabajo.","Qué necesitamos de los demás para hacerlo bien."]],
+     ["30–45","Cada equipo cuelga su cartel. Cada persona escribe post-its “te necesito para…” y los pega en los carteles de otros equipos. Cada equipo se lleva su cartel."]],
+   mat:["Un cartel por equipo con su nombre","Post-its y rotuladores","Campanilla"],
+   dont:"Diapositivas, organigramas o pasarse de 5'.",
+   note:"Orden propuesto (ajustar a la lista real): cierre de ventas, atención al cliente, redes sociales y marketing, operaciones y producción de viajes, líderes de expedición, administración. Mejor que no presente siempre el responsable; si un equipo tiene colaboradores esporádicos, uno de ellos presenta."},
+  {t:"18:45", d:"15'", k:"log", quiet:true, title:"Merienda"},
+  {t:"19:00", d:"60'", k:"emp", title:"Revisión del contrato de viaje con el abogado",
+   obj:"Que el contrato deje de ser un papel del abogado y se entienda qué protege a viajeros, líderes y empresa.",
+   why:"El abogado pidió no ir el primer día ni a primera hora. Es lo más técnico e independiente, así que cierra la tarde y él solo viene esa hora. El formato por casos compensa la energía baja.",
+   fac:"Abogado; un líder lo presenta", res:"Hoja de preguntas frecuentes de una página", en:"Media",
+   steps:[
+     ["Antes","El formulario previo incluye: “¿Qué situación de ruta te ha hecho dudar de lo que dice el contrato?” El abogado recibe las respuestas el jueves."],
+     ["0–10","El abogado explica las tres o cuatro cláusulas que más afectan al día a día en ruta."],
+     ["10–40","Grupos mezclados de 4–5 reciben un caso real del año, sin nombres (cancelación por meteorología, lesión, viajero que no respeta las normas de seguridad, cambio de itinerario). Deciden qué harían y qué creen que dice el contrato; el abogado pasa por los grupos."],
+     ["40–60","El abogado resuelve caso a caso y las preguntas que queden."]],
+   mat:["Casos impresos, uno por grupo","Preguntas del formulario agrupadas","Plantilla para la hoja de preguntas frecuentes"],
+   dont:"Leer el contrato cláusula a cláusula o presentarlo como norma de oficina."},
+  {t:"20:00", d:"60'", k:"log", quiet:true, title:"Tiempo libre"},
+  {t:"21:00", d:"", k:"log", quiet:true, title:"Cena y fiesta"}
+ ]},
+ {id:"lunes", name:"Lunes 12", theme:"Escucha y cierre",
+  sub:"Escucha al equipo con tres preguntas anónimas, con la confianza ya construida, y cierra con fechas concretas. La energía será baja: todo es corto y en movimiento.",
+  blocks:[
+  {t:"9:00", d:"60'", k:"log", quiet:true, title:"Desayuno y salida de habitaciones"},
+  {t:"10:00", d:"5'", k:"esc", title:"Ronda de inicio del día",
+   obj:"Volver al grupo.",
+   why:"Tras la noche del domingo hace falta un paso suave antes de pedir opinión.",
+   fac:"Por asignar (jueves)", res:"—", en:"Baja",
+   steps:["En círculo: una palabra de cómo amaneces. 10'' por persona."],
+   mat:["Café listo"],
+   dont:"Alargarla."},
+  {t:"10:05", d:"70'", k:"esc", title:"Taller de escucha: urna anónima y acuerdos de equipo",
+   obj:"Escuchar al equipo en dos partes: la urna recoge lo que nadie diría en voz alta; la pared, lo que queremos construir juntos sobre cómo comunicarnos y trabajar.",
+   why:"Necesita confianza, que ya hay, e información sobre los cambios, que llegó el domingo. La urna da voz a lo incómodo; la pared, a la vista de todos, convierte lo que necesitamos en acuerdos concretos.",
+   fac:"Por asignar (jueves). Dirección escucha y solo responde a las preguntas de la urna.", res:"3 acuerdos de equipo firmados y lista de preguntas pendientes", en:"Media",
+   steps:[
+     ["Desde el sábado","Una sola urna con papelitos y bolígrafos iguales al lado, y un cartel: “Lo que no dirías en voz alta: una pregunta para dirección, algo que te preocupa o por qué te irías si mañana te fueras.”"],
+     ["0–5","<b>Introducción.</b> “Hoy hay dos partes: lo que nos habéis dejado en la urna y los acuerdos de equipo. Lo que no dé tiempo a tratar hoy se responde por escrito en 7 días.”"],
+     ["5–20","<b>Urna.</b> El facilitador saca papelitos al azar y los lee. Si es una pregunta, dirección responde en 1–2'. Si es una preocupación, se lee sin comentar. Lo que no salga se contesta por escrito. Si la urna está casi vacía, se pasa a la pared."],
+     ["20–35","<b>Pared.</b> 15' para escribir y pegar post-its, con música de fondo. Tres columnas: seguir haciendo, empezar a hacer y dejar de hacer. Preguntas guía en un cartel al lado:",["¿Qué necesitas de los demás para hacer bien tu trabajo?","¿Qué nos funciona cuando nos comunicamos en remoto y qué no?","¿Cómo quieres enterarte de las decisiones y los cambios que te afectan?","¿Qué canal usamos para qué (WhatsApp, correo, llamadas) y qué se pierde por el camino?","¿Qué te ha frustrado este año en cómo nos coordinamos?","¿Cómo hacemos que quien colabora una o dos veces al año se sienta parte del equipo?","¿Qué haríamos distinto si nos viéramos todos los días?","¿Qué te comprometes a hacer tú a partir del martes?"]],
+     ["35–42","<b>Agrupar.</b> El facilitador y dos voluntarios juntan los repetidos y leen los temas en voz alta."],
+     ["42–47","<b>Votación.</b> Tres pegatinas por persona. Los 3 temas más votados se trabajan hoy. Antes de votar se dice: todo lo demás entra en el acuerdo de equipo completo que se envía por escrito."],
+     ["47–62","<b>Tres grupos mezclados</b>, uno por tema. Cada grupo escribe su acuerdo con la forma “Cuando…, nosotros…” y qué haremos en concreto a partir del martes."],
+     ["62–70","<b>Acuerdos.</b> Cada grupo lee el suyo. Votación con la mano (0 a 5 dedos): quien marque 0 o 1 propone un cambio en el momento. Los 3 acuerdos se escriben en grande y firma todo el mundo."]],
+   mat:["Una urna con su cartel, papelitos y bolígrafos iguales","Papel kraft con tres columnas","Cartel con las preguntas guía","Post-its y rotuladores","Pegatinas de votación","Altavoz","Cartulina grande para los acuerdos"],
+   dont:"Intentar adivinar quién escribió qué en la urna, saltarse lo incómodo al leer, o que dirección se defienda (“eso, en la respuesta por escrito”)."},
+  {t:"11:15", d:"5'", k:"log", quiet:true, title:"Pausa"},
+  {t:"11:20", d:"40'", k:"esc", title:"Cierre: me he dado cuenta y agradezco",
+   obj:"Cerrar como se cierran las expediciones.",
+   why:"Es el ritual que el equipo ya conoce de ruta. Terminar agradeciendo a personas concretas y con fechas claras de lo que viene deja buen sabor y credibilidad.",
+   fac:"Por asignar (jueves)", res:"—", en:"Media, emotiva",
+   steps:[
+     ["0–30","<b>Círculo.</b> Cada persona dice “Me he dado cuenta de…”, algo que se lleva del fin de semana, y tres agradecimientos concretos a personas o momentos. Unos 90'' por persona. Con más de 20 personas, un solo agradecimiento."],
+     ["30–37","Quien lidere el cierre, o Antonio: lo que nos llevamos (propuestas de valores, acuerdos de equipo y preguntas pendientes) y la fecha de lo siguiente que pasa con cada cosa."],
+     ["37–40","Despedida con el gesto con el que el equipo cierra sus expediciones."]],
+   mat:["Cartel con las fechas de seguimiento","Los 3 acuerdos firmados a la vista"],
+   dont:"Cerrar sin fechas o con frases como “lo tendremos en cuenta”."},
+  {t:"12:00", d:"", k:"log", quiet:true, title:"Fin"}
+ ]}
+];
+
+const MAT = ["Bolsas de bienvenida (15)","Tarjetas pequeñas para el mensaje (15)","Chuches u otro detalle (15 raciones)","Post-its normales de varios colores (6 paquetes de 100)","Post-its grandes (2 paquetes)","Pegatinas redondas para votar (unas 100)","Rotuladores gruesos (20)","Bolígrafos iguales para la urna (20)","Folios para la subasta de valores","Papel kraft en rollo (10 m o más)","Cartulinas grandes A1 o A2 (11)","Cinta de carrocero (2)","Tablillas con pinza para los observadores (2)","Caja de cartón para la urna y taco de papelitos","Campanilla o silbato","Leña, si no la pone el alojamiento","Farolillos por si no hay permiso de fuego (10) y pilas","Imprimir: plantillas de observación (2), casos del abogado y cartel de la agenda","Confirmar que alguien trae: camisetas, tarjetas de Bertelis, altavoz, guitarra, batería externa, proyector o pantalla, portátil y cable"];
+const DEC = ["Instructor de primeros auxilios: confirmar sábado de 16:45 a 19:45, material, caso adaptado a las rutas y si da certificado.","Abogado: confirmar domingo de 19:00 a 20:00, formato por casos y que revisa la hoja de preguntas frecuentes después.","Quién facilita el taller de valores y el de escucha: nadie de dirección.","Horario exacto de la orientación (10:00–13:00), grupos mezclados y si caben 20' de puesta en común.","Enviar ya el formulario anónimo (abierto hasta el jueves 8) con la pregunta para el abogado.","Lista de asistentes, para las mesas y las tallas de las camisetas.","Qué información económica se comparte el domingo.","Si los cambios internos se presentan como definitivos o como versión de trabajo, y la lista de equipos internos con quién presenta.","Quién firma la respuesta por escrito a las propuestas y fecha de envío (como tarde el lunes 19).","Política de alcohol del sábado y del domingo.","Plan para lluvia: noche sin fuego (permiso o farolillos).","Preparar la urna con su cartel, papelitos y bolígrafos iguales, y la pared de tres columnas con las preguntas guía.","Tener las tarjetas de Bertelis (una por persona) y decidir quién de redes graba la ola.","Con la persona de redes: líderes a entrevistar, turnos del sábado 19:45–20:45 y preguntas enviadas antes.","Proyector o pantalla, portátil y cable para la presentación del domingo; probarlo el sábado."];
+
+const esc = s => s; // contenido propio, ya escrito como HTML seguro
+
+function stepsHTML(steps){
+  const timed = steps.some(s => Array.isArray(s) && s[0] !== "Plantilla");
+  if(!timed){
+    return `<ol class="steps">${steps.map(s => {
+      if(Array.isArray(s)) return `<li style="list-style:none;margin-left:-1.3rem"><ul class="sub">${s[2].map(x=>`<li>${x}</li>`).join("")}</ul></li>`;
+      return `<li>${s}</li>`;}).join("")}</ol>`;
+  }
+  return `<ul class="steps timed">${steps.map(s => {
+    const [m,x,sub] = Array.isArray(s) ? s : ["",s];
+    return `<li><span class="m">${m}</span><div>${x}${sub?`<ul class="sub">${sub.map(y=>`<li>${y}</li>`).join("")}</ul>`:""}</div></li>`;
+  }).join("")}</ul>`;
+}
+
+const catName = {con:"Conexión",exp:"Experiencia",emp:"Empresa",esc:"Escucha y cierre",log:"Logística"};
+
+function blockHTML(b){
+  if(b.quiet) return `<div class="row quiet k-${b.k}"><div><span class="time">${b.t}</span><span class="ttl">${b.title}</span><span class="dur">${b.d}</span></div></div>`;
+  return `<details class="row k-${b.k}">
+    <summary><span class="time">${b.t}</span><span class="ttl"><strong>${b.title}</strong><span class="chip k-${b.k}">${catName[b.k]}</span></span><span class="dur">${b.d}<span class="caret" aria-hidden="true"></span></span></summary>
+    <div class="card">
+      <dl class="meta">
+        <div><dt>Objetivo</dt><dd>${b.obj}</dd></div>
+        <div><dt>Facilita</dt><dd>${b.fac}</dd></div>
+        <div><dt>Resultado</dt><dd>${b.res}</dd></div>
+        <div><dt>Energía</dt><dd>${b.en}</dd></div>
+      </dl>
+      <div class="why"><div class="lbl">Por qué va aquí</div><p>${b.why}</p></div>
+      <div><div class="lbl">Guion</div>${stepsHTML(b.steps)}</div>
+      <div class="two">
+        <div><div class="lbl">Material</div><ul class="mat">${b.mat.map(m=>`<li>${m}</li>`).join("")}</ul></div>
+        <div class="dont"><div class="lbl">Qué no hacer</div><p>${b.dont}</p></div>
+      </div>
+      ${b.note?`<p class="note">${b.note}</p>`:""}
+    </div>
+  </details>`;
+}
+
+document.getElementById("agenda").innerHTML = DAYS.map(d => `
+  <section class="day" id="${d.id}">
+    <div class="dayhead"><span class="blaze" aria-hidden="true"></span><h2>${d.name}</h2><h3 style="color:var(--muted);font-weight:600">${d.theme}</h3></div>
+    <p class="daysub">${d.sub}</p>
+    <div class="list">${d.blocks.map(blockHTML).join("")}</div>
+  </section>`).join("");
+
+/* Listas con casillas (se recuerdan solo en este navegador) */
+function checklist(elId, items, key){
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(key) || "{}"); } catch(e){}
+  const el = document.getElementById(elId);
+  el.innerHTML = items.map((t,i)=>`<li><label><input type="checkbox" id="${key}-${i}" ${saved[i]?"checked":""}><span>${t}</span></label></li>`).join("");
+  el.addEventListener("change", e => {
+    const i = e.target.id.split("-").pop();
+    saved[i] = e.target.checked;
+    try { localStorage.setItem(key, JSON.stringify(saved)); } catch(err){}
+  });
+}
+checklist("matList", MAT, "compras");
+checklist("decList", DEC, "dec");
+
+/* Abrir y cerrar todas las fichas */
+const tBtn = document.getElementById("toggleAll");
+tBtn.addEventListener("click", () => {
+  const all = [...document.querySelectorAll("details.row")];
+  const open = !all.every(d => d.open);
+  all.forEach(d => d.open = open);
+  tBtn.textContent = open ? "Cerrar todas las fichas" : "Abrir todas las fichas";
+});
+
+/* Índice flotante */
+const fab = document.getElementById("fab"), menu = document.getElementById("menu");
+function setMenu(open){ menu.hidden = !open; fab.setAttribute("aria-expanded", String(open)); }
+fab.addEventListener("click", () => setMenu(menu.hidden));
+menu.addEventListener("click", e => { if(e.target.closest("a")) setMenu(false); });
+document.addEventListener("keydown", e => { if(e.key === "Escape") setMenu(false); });
+document.addEventListener("click", e => { if(!menu.hidden && !menu.contains(e.target) && !fab.contains(e.target)) setMenu(false); });
+</script>
+
+</body></html>
